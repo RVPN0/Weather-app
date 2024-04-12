@@ -1,77 +1,49 @@
                                 LIST OF TASKS 
 
 1. Project Planning and Ideation: (EVERYONE) 
-
         - Brainstorm the app’s features and unique value proposition (UVP). 
-
         - Decide on the target audience (e.g., travelers, outdoor enthusiasts, local residents). 
-
         - Plan the overall app architecture and user flow. 
 
-
 2. Front-End Development: (EVERYONE) 
+	- HTML/CSS Design:  
+		- Create the HTML structure for the app interface. 
+		- Style the app using CSS to make it visually appealing. 
 
- HTML/CSS Design:  
+	- Java Interaction:  
+		- Implement user input (e.g., city name or coordinates) and search functionality. 
+		- Display weather information dynamically (temperature, description) based on user input. 
+		- Handle error cases (e.g., invalid city name). 
 
-Create the HTML structure for the app interface. 
+3. Back-End Development:      (MARQUIS AND LESLIE) 
+	- API Integration:  
+		- Choose a reliable weather API (e.g., OpenWeatherMap, ClimaCell). 
+		- Obtain an API key. 
+		- Fetch weather data (current conditions, forecasts) using JavaScript. 
 
-Style the app using CSS to make it visually appealing. 
+	- Data Processing:  
+		- Parse the API response to extract relevant weather details. 
+		- Convert temperature units (e.g., Celsius to Fahrenheit). 
+		- Handle data errors gracefully. 
+		- Quality Assurance and Testing:(Kyle and Darlington) 
 
-JavaScript Interaction:  
+	- Unit Testing:  
+		- Test individual components (e.g., API calls, UI elements). 
+		- Verify data accuracy and consistency. 
 
-Implement user input (e.g., city name) and search functionality. 
+	- User Testing:  
+		- Test the app with real users to identify any usability issues. 
+		- Gather feedback and make necessary improvements. 
 
-Display weather information dynamically (temperature, description) based on user input. 
+4. Deployment and Hosting:         (Marquis) 
+	- Choose a hosting platform (e.g., GitHub Pages, Netlify, Heroku). 
+	- Deploy your app online. 
+	- Ensure it works across different devices and browsers. 
 
-Handle error cases (e.g., invalid city name). 
-
-3. Back-End Development: (MARQUIS AND LESLIE) 
-
-API Integration:  
-
-Choose a reliable weather API (e.g., OpenWeatherMap, ClimaCell). 
-
-Obtain an API key. 
-
-Fetch weather data (current conditions, forecasts) using JavaScript. 
-
-Data Processing:  
-
-Parse the API response to extract relevant weather details. 
-
-Convert temperature units (e.g., Celsius to Fahrenheit). 
-
-Handle data errors gracefully. 
-
-Quality Assurance and Testing:(Kyle and Darlington) 
-
-Unit Testing:  
-
-Test individual components (e.g., API calls, UI elements). 
-
-Verify data accuracy and consistency. 
-
-User Testing:  
-
-Test the app with real users to identify any usability issues. 
-
-Gather feedback and make necessary improvements. 
-
-Deployment and Hosting: (Marquis) 
-
-Choose a hosting platform (e.g., GitHub Pages, Netlify, Heroku). 
-
-Deploy your app online. 
-
-Ensure it works across different devices and browsers. 
-
-Documentation and Maintenance:(Leslie) 
-
-Write clear documentation for your codebase. 
-
-Document the API usage and any other dependencies. 
-
-Plan for future maintenance and updates. 
+5. Documentation and Maintenance:      (Leslie) 
+	- Write clear documentation for your codebase. 
+	- Document the API usage and any other dependencies. 
+	- Plan for future maintenance and updates. 
 
  
 
