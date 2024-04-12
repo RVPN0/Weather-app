@@ -1,0 +1,6 @@
+Framework for Building the Application:
+
+Spring Boot: Great for building production-ready applications quickly with minimal configuration, and it integrates seamlessly with other Spring ecosystem projects like Spring Data and Spring Security.
+Java EE (Jakarta EE): Provides a robust platform to develop enterprise-level applications using Java.
+
+Spring Boot implements Java EE and is better for beginers
