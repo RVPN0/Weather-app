@@ -1,16 +1,17 @@
-LIST OF TASKS 
+                                LIST OF TASKS 
 
-Project Planning and Ideation: (EVERYONE) 
+1. Project Planning and Ideation: (EVERYONE) 
 
-Brainstorm the app’s features and unique value proposition (UVP). 
+        - Brainstorm the app’s features and unique value proposition (UVP). 
 
-Decide on the target audience (e.g., travelers, outdoor enthusiasts, local residents). 
+        - Decide on the target audience (e.g., travelers, outdoor enthusiasts, local residents). 
 
-Plan the overall app architecture and user flow. 
+        - Plan the overall app architecture and user flow. 
 
-Front-End Development: (EVERYONE) 
 
-HTML/CSS Design:  
+2. Front-End Development: (EVERYONE) 
+
+ HTML/CSS Design:  
 
 Create the HTML structure for the app interface. 
 
@@ -24,7 +25,7 @@ Display weather information dynamically (temperature, description) based on user
 
 Handle error cases (e.g., invalid city name). 
 
-Back-End Development: (MARQUIS AND LESLIE) 
+3. Back-End Development: (MARQUIS AND LESLIE) 
 
 API Integration:  
 
