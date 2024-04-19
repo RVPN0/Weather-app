@@ -4,7 +4,6 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.StringReader;
 import javax.json.Json;
-import javax.json.JsonArray;
 import javax.json.JsonObject;
 import javax.json.JsonReader;
 
@@ -38,15 +37,15 @@ public class GeocodeService extends APIConfig {
 
     private static double[] parseCoordinates(String jsonResponse) {
         JsonReader jsonReader = Json.createReader(new StringReader(jsonResponse));
-        JsonArray jsonArray = jsonReader.readArray();
+        JsonObject jsonObject = jsonReader.readObject();
         jsonReader.close();
 
-        if (!jsonArray.isEmpty()) {
-            JsonObject location = jsonArray.getJsonObject(0);
-            double latitude = Double.parseDouble(location.getString("lat"));
-            double longitude = Double.parseDouble(location.getString("lon"));
+        if (jsonObject.containsKey("lat") && jsonObject.containsKey("lon")) {
+            double latitude = Double.parseDouble(jsonObject.getString("lat"));
+            double longitude = Double.parseDouble(jsonObject.getString("lon"));
             return new double[] {latitude, longitude};
         }
         return new double[] {0.0, 0.0};
     }
 }
+
