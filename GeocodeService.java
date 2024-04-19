@@ -9,10 +9,10 @@ import javax.json.JsonReader;
 import java.io.StringReader;
 
 public class GeocodeService {
-    private static final String BASE_URL = "https://geocode.maps.co/search";
+    private static final String BASE_URL = "https://geocode.xyz";
 
     public static double[] getCoordinates(String address, String apiKey) {
-        String apiUrl = BASE_URL + "?q=" + address.replaceAll(" ", "+") + "&api_key=" + apiKey;
+        String apiUrl = BASE_URL + "?locate=" + address.replaceAll(" ", "+") + "&auth=" + apiKey;
         try {
             URL url = new URL(apiUrl);
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
@@ -34,26 +34,23 @@ public class GeocodeService {
                 System.out.println("Error: Failed to geocode address. HTTP Error Code: " + responseCode);
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            System.out.println("Error: " + e.getMessage());
         }
         return new double[]{0.0, 0.0}; // Default coordinates on error
     }
 
     private static double[] parseCoordinates(String jsonResponse) {
-        try {
-            JsonObject jsonObject = Json.createReader(new StringReader(jsonResponse)).readObject();
-            JsonObject location = jsonObject.getJsonObject("location");
-
-            if (location != null && location.containsKey("lat") && location.containsKey("lon")) {
-                double latitude = location.getJsonNumber("lat").doubleValue();
-                double longitude = location.getJsonNumber("lon").doubleValue();
-                return new double[]{latitude, longitude};
-            }
+        try (JsonReader reader = Json.createReader(new StringReader(jsonResponse))) {
+            JsonObject jsonObject = reader.readObject();
+            double latitude = Double.parseDouble(jsonObject.getString("latt"));
+            double longitude = Double.parseDouble(jsonObject.getString("longt"));
+            return new double[]{latitude, longitude};
         } catch (Exception e) {
-            e.printStackTrace();
+            System.out.println("Error parsing JSON response: " + e.getMessage());
         }
         return new double[]{0.0, 0.0}; // Default coordinates on error
     }
 }
+
 
 
