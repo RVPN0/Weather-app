@@ -1,10 +1,12 @@
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
+
 import javax.json.Json;
 import javax.json.JsonObject;
 import javax.json.JsonReader;
+import java.io.StringReader;
 
 public class GeocodeService {
     private static final String BASE_URL = "https://geocode.maps.co/search";
@@ -34,19 +36,23 @@ public class GeocodeService {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return new double[] {0.0, 0.0}; // Default coordinates on error
+        return new double[]{0.0, 0.0}; // Default coordinates on error
     }
 
     private static double[] parseCoordinates(String jsonResponse) {
-        JsonObject jsonObject = Json.createReader(new StringReader(jsonResponse)).readObject();
-        JsonObject location = jsonObject.getJsonObject("location");
+        try {
+            JsonObject jsonObject = Json.createReader(new StringReader(jsonResponse)).readObject();
+            JsonObject location = jsonObject.getJsonObject("location");
 
-        if (location != null && location.containsKey("lat") && location.containsKey("lon")) {
-            double latitude = location.getJsonNumber("lat").doubleValue();
-            double longitude = location.getJsonNumber("lon").doubleValue();
-            return new double[] {latitude, longitude};
+            if (location != null && location.containsKey("lat") && location.containsKey("lon")) {
+                double latitude = location.getJsonNumber("lat").doubleValue();
+                double longitude = location.getJsonNumber("lon").doubleValue();
+                return new double[]{latitude, longitude};
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-        return new double[] {0.0, 0.0};
+        return new double[]{0.0, 0.0}; // Default coordinates on error
     }
 }
 
