@@ -6,11 +6,11 @@ public class WeatherApp {
         System.out.println("Enter an address:");
         String address = scanner.nextLine();
         System.out.println("Enter your API key:");
-        String apiKey = scanner.nextLine(); // Get the API key from user input
+        String apiKey = scanner.nextLine();
         scanner.close();
 
         GeocodeService geocodeService = new GeocodeService();
-        double[] coordinates = geocodeService.getCoordinates(address, apiKey); // Pass API key
+        double[] coordinates = geocodeService.getCoordinates(address, apiKey);
 
         if (coordinates[0] != 0.0 && coordinates[1] != 0.0) {
             WeatherService weatherService = new WeatherService();
