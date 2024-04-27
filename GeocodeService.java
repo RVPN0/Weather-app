@@ -8,59 +8,79 @@ import javax.json.Json;
 import javax.json.JsonObject;
 import javax.json.JsonReader;
 import java.io.StringReader;
+import java.util.ArrayList;
+import java.util.List;
 
 public class GeocodeService {
-    // Constants for the base URL of the Geocode API and HTTP headers
     private static final String BASE_URL = "https://geocode.xyz";
+    private static List<AddressCoordinate> coordinatesCache = new ArrayList<>();
 
-    
+    /**
+     * Stores address and its coordinates for caching.
+     */
+    private static class AddressCoordinate {
+        String address;
+        double latitude;
+        double longitude;
+
+        AddressCoordinate(String address, double latitude, double longitude) {
+            this.address = address;
+            this.latitude = latitude;
+            this.longitude = longitude;
+        }
+    }
+
+    /**
+     * Retrieves geographic coordinates for a given address using the Geocode.xyz API, with caching.
+     *
+     * @param address The address to geocode.
+     * @param apiKey  The API key for authenticating with the Geocode.xyz service.
+     * @return An array of doubles where index 0 is latitude and index 1 is longitude.
+     */
     public static double[] getCoordinates(String address, String apiKey) {
+        // First check if the address has already been geocoded and cached.
+        for (AddressCoordinate cachedCoordinate : coordinatesCache) {
+            if (cachedCoordinate.address.equalsIgnoreCase(address)) {
+                return new double[]{cachedCoordinate.latitude, cachedCoordinate.longitude};
+            }
+        }
+
         try {
-            // URL-encode the address to ensure it is safe for transmission over the Internet.
             String encodedAddress = URLEncoder.encode(address, StandardCharsets.UTF_8.toString());
-            // Construct the full API URL with the encoded address and the API key.
             String apiUrl = BASE_URL + "?locate=" + encodedAddress + "&auth=" + apiKey;
 
-            // Create an HttpClient object for sending requests.
             HttpClient client = HttpClient.newHttpClient();
-            // Build the HTTP request with the appropriate headers for JSON and browser-like user-agent.
             HttpRequest request = HttpRequest.newBuilder()
                     .uri(URI.create(apiUrl))
                     .header("Accept", "application/json")
                     .header("User-Agent", "Java 11 HttpClient Bot")
                     .build();
 
-            // Send the HTTP request and get the response as a String.
             HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
-            // Check if the response status code is HTTP OK (200); if so, parse the coordinates.
             if (response.statusCode() == 200) {
-                return parseCoordinates(response.body());
+                double[] coordinates = parseCoordinates(response.body());
+                // Cache the new coordinates.
+                coordinatesCache.add(new AddressCoordinate(address, coordinates[0], coordinates[1]));
+                return coordinates;
             } else {
-                // Log an error message if the HTTP status code is not 200.
                 System.out.println("Error: Failed to geocode address. HTTP Error Code: " + response.statusCode());
             }
         } catch (Exception e) {
-            // Log any exceptions that occur during the request or parsing.
             System.out.println("Error: " + e.getMessage());
         }
-        // Return default coordinates if an error occurs.
-        return new double[]{0.0, 0.0};
+        return new double[]{0.0, 0.0}; // Default coordinates on error
     }
 
-    
     private static double[] parseCoordinates(String jsonResponse) {
         try (JsonReader reader = Json.createReader(new StringReader(jsonResponse))) {
-            // Convert the JSON string into a JsonObject.
             JsonObject jsonObject = reader.readObject();
-            // Extract latitude and longitude from the JSON object.
             double latitude = Double.parseDouble(jsonObject.getString("latt"));
             double longitude = Double.parseDouble(jsonObject.getString("longt"));
             return new double[]{latitude, longitude};
         } catch (Exception e) {
-            // Log any exceptions that occur during JSON parsing.
             System.out.println("Error parsing JSON response: " + e.getMessage());
-            return new double[]{0.0, 0.0}; // Return default coordinates if parsing fails.
+            return new double[]{0.0, 0.0}; // Default coordinates on error
         }
     }
 }
