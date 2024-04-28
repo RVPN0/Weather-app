@@ -59,7 +59,7 @@ public class WeatherServiceNWS extends CoordinateCache {
         }
         return "No cached coordinates available for this address.";
     }
-    // Assume this method is part of WeatherServiceNWS
+    
     public ForecastData getForecastData(String office, int gridX, int gridY) throws IOException, InterruptedException {
         String url = String.format("%s/gridpoints/%s/%d,%d/forecast", BASE_URL, office, gridX, gridY);
         HttpRequest request = HttpRequest.newBuilder()
