@@ -4,7 +4,7 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.io.IOException;
 
-public class WeatherServiceNWS {
+public class WeatherServiceNWS extends CoordinateCache {
     private final HttpClient httpClient = HttpClient.newHttpClient();
     private static final String BASE_URL = "https://api.weather.gov";
 
@@ -13,7 +13,7 @@ public class WeatherServiceNWS {
         String url = String.format("%s/gridpoints/%s/%d,%d/forecast", BASE_URL, office, gridX, gridY);
         HttpRequest request = HttpRequest.newBuilder()
             .uri(URI.create(url))
-            .header("User-Agent", "myweatherapp.com, contact@myweatherapp.com") // User-Agent as required
+            .header("User-Agent", "myweatherapp.com, contact@myweatherapp.com")
             .build();
 
         HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
@@ -25,23 +25,49 @@ public class WeatherServiceNWS {
         String url = String.format("%s/alerts/active?area=%s", BASE_URL, area);
         HttpRequest request = HttpRequest.newBuilder()
             .uri(URI.create(url))
-            .header("User-Agent", "myweatherapp.com, contact@myweatherapp.com") // Include User-Agent as required
+            .header("User-Agent", "myweatherapp.com, contact@myweatherapp.com")
             .build();
 
         HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
         return response.body();
     }
 
-    // Example usage
-    public static void main(String[] args) {
-        WeatherServiceNWS service = new WeatherServiceNWS();
+    // Fetch the forecast using an address
+    public String fetchForecastByAddress(String address) throws IOException, InterruptedException {
+        double[] coordinates = getCoordinatesFromCache(address);
+        if (coordinates != null) {
+            // Fetch the points data to get the office/gridX/gridY
+            String pointsUrl = String.format("%s/points/%f,%f", BASE_URL, coordinates[0], coordinates[1]);
+            HttpRequest pointsRequest = HttpRequest.newBuilder()
+                .uri(URI.create(pointsUrl))
+                .header("User-Agent", "myweatherapp.com, contact@myweatherapp.com")
+                .build();
+
+            HttpResponse<String> pointsResponse = httpClient.send(pointsRequest, HttpResponse.BodyHandlers.ofString());
+            if (pointsResponse.statusCode() == 200) {
+                String gridForecastUrl = extractForecastUrl(pointsResponse.body());
+                HttpRequest forecastRequest = HttpRequest.newBuilder()
+                    .uri(URI.create(gridForecastUrl))
+                    .header("User-Agent", "myweatherapp.com, contact@myweatherapp.com")
+                    .build();
+
+                HttpResponse<String> forecastResponse = httpClient.send(forecastRequest, HttpResponse.BodyHandlers.ofString());
+                return forecastResponse.body();
+            } else {
+                return "Error retrieving grid point data";
+            }
+        }
+        return "No cached coordinates available for this address.";
+    }
+
+    // Extract the forecast URL from the points API response
+    private String extractForecastUrl(String jsonResponse) {
         try {
-            String forecast = service.fetchGridForecast("TOP", 31, 80);
-            System.out.println("Forecast: " + forecast);
-            String alerts = service.fetchActiveAlerts("KS");
-            System.out.println("Alerts: " + alerts);
-        } catch (IOException | InterruptedException e) {
-            e.printStackTrace();
+            // This method needs to parse the JSON to extract the forecast URL
+            // Placeholder for JSON parsing logic
+            return "https://api.weather.gov/gridpoints/TOP/31,80/forecast"; // Example URL
+        } catch (Exception e) {
+            System.out.println("Error extracting forecast URL: " + e.getMessage());
+            return null;
         }
     }
-}
