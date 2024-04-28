@@ -11,7 +11,7 @@ import java.io.StringReader;
 
 public class GeocodeService extends CoordinateCache {
     private static final HttpClient client = HttpClient.newHttpClient();
-    private static final String API_KEY = "YOUR_API_KEY_HERE";  // Securely manage and store API keys
+    private static final String API_KEY = "6605a52f94949045597836mxe984877";  // Securely manage and store API keys
 
     public static double[] forwardGeocode(String address) {
         // First, check the cache
