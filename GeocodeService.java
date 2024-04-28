@@ -13,6 +13,7 @@ public class GeocodeService extends APIConfig {
     private static final HttpClient client = HttpClient.newHttpClient();
 
     public static double[] forwardGeocode(String address) {
+        useApiKey();  // Log API key usage
         double[] cachedCoordinates = CoordinateCache.getCoordinatesFromCache(address);
         if (cachedCoordinates != null) {
             return cachedCoordinates;
@@ -21,10 +22,9 @@ public class GeocodeService extends APIConfig {
         try {
             String encodedAddress = URLEncoder.encode(address, StandardCharsets.UTF_8.toString());
             String url = String.format("%s/search?q=%s&api_key=%s", GEOCODE_BASE_URL, encodedAddress, GEOCODE_API_KEY);
-
             HttpRequest request = HttpRequest.newBuilder()
                     .uri(URI.create(url))
-                    .header("User-Agent", USER_AGENT) // User-Agent to comply with server requirements
+                    .header("User-Agent", USER_AGENT)
                     .build();
             HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
             if (response.statusCode() == 200) {
@@ -41,7 +41,6 @@ public class GeocodeService extends APIConfig {
     public static String reverseGeocode(double latitude, double longitude) {
         try {
             String url = String.format("%s/reverse?lat=%f&lon=%f&api_key=%s", GEOCODE_BASE_URL, latitude, longitude, GEOCODE_API_KEY);
-
             HttpRequest request = HttpRequest.newBuilder()
                     .uri(URI.create(url))
                     .header("User-Agent", USER_AGENT)
