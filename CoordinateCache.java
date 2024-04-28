@@ -12,12 +12,13 @@ public class CoordinateCache {
         }
     }
 
-    // LinkedList to store coordinate entries
-    private static LinkedList {
-         <CoordinateEntry> coordinateCache = new LinkedList<>();
-    }
+    // LinkedList to store coordinate entries, specifying the generic type
+    private static LinkedList <CoordinateEntry> coordinateCache = new LinkedList<>();
+    private static final int MAX_CACHE_SIZE = 10;  // Maximum number of entries in the cache
+
     // Method to add coordinates to the cache
     public static void addCoordinatesToCache(String address, double latitude, double longitude) {
+        // First, check if the address already exists in the cache
         for (CoordinateEntry entry : coordinateCache) {
             if (entry.address.equalsIgnoreCase(address)) {
                 // Update existing entry if address matches
@@ -26,8 +27,15 @@ public class CoordinateCache {
                 return;
             }
         }
-        // If not found, add a new entry
-        coordinateCache.add(new CoordinateEntry(address, latitude, longitude));
+
+        // Check if the cache has reached its maximum size
+        if (coordinateCache.size() >= MAX_CACHE_SIZE) {
+            // Remove the oldest entry to make space for the new one
+            coordinateCache.removeFirst();
+        }
+
+        // Add the new entry
+        coordinateCache.addLast(new CoordinateEntry(address, latitude, longitude));
     }
 
     // Method to retrieve coordinates from the cache
@@ -39,4 +47,11 @@ public class CoordinateCache {
         }
         return null; // Return null if no entry is found
     }
+
+    // Method to get all entries in the cache for display as favorites
+    public static LinkedList <CoordinateEntry> getAllFavorites() {
+        return new LinkedList<>(coordinateCache);
+    }
 }
+
+        
