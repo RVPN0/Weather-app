@@ -14,6 +14,12 @@ public class GeocodeService extends CoordinateCache {
     private static final String API_KEY = "YOUR_API_KEY_HERE";  // Securely manage and store API keys
 
     public static double[] forwardGeocode(String address) {
+        // First, check the cache
+        double[] cachedCoordinates = getCoordinatesFromCache(address);
+        if (cachedCoordinates != null) {
+            return cachedCoordinates;
+        }
+
         try {
             String encodedAddress = URLEncoder.encode(address, StandardCharsets.UTF_8.toString());
             String url = String.format("https://geocode.maps.co/search?q=%s&api_key=%s", encodedAddress, API_KEY);
@@ -23,7 +29,9 @@ public class GeocodeService extends CoordinateCache {
                     .build();
             HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
             if (response.statusCode() == 200) {
-                return parseCoordinates(response.body());
+                double[] coordinates = parseCoordinates(response.body());
+                addCoordinatesToCache(address, coordinates[0], coordinates[1]); // Add to cache
+                return coordinates;
             }
         } catch (Exception e) {
             System.out.println("Error during forward geocoding: " + e.getMessage());
@@ -32,6 +40,7 @@ public class GeocodeService extends CoordinateCache {
     }
 
     public static String reverseGeocode(double latitude, double longitude) {
+        // Reverse geocoding cache integration could be here if applicable
         try {
             String url = String.format("https://geocode.maps.co/reverse?lat=%f&lon=%f&api_key=%s", latitude, longitude, API_KEY);
 
