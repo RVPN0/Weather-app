@@ -1,6 +1,6 @@
 public class APIConfig {
     // API key for Geocode API - securely store and manage this key
-    protected static final String GEOCODE_API_KEY = "your_geocode_api_key_here";
+    protected static final String GEOCODE_API_KEY = "6605a52f94949045597836mxe984877";
 
     // Base URL for the Geocode API
     protected static final String GEOCODE_BASE_URL = "https://geocode.maps.co";
