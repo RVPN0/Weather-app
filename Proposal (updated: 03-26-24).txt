@@ -40,7 +40,7 @@
 	- Deploy your app online. 
 	- Ensure it works across different devices and browsers. 
 
-5. Documentation and Maintenance:      (Leslie)  
+5. Documentation and Maintenance:      (Leslie)  Done
 	- Write clear documentation for your codebase. 
 	- Document the API usage and any other dependencies. 
 	- Plan for future maintenance and updates. 
