@@ -59,6 +59,21 @@ public class WeatherServiceNWS extends CoordinateCache {
         }
         return "No cached coordinates available for this address.";
     }
+    // Assume this method is part of WeatherServiceNWS
+    public ForecastData getForecastData(String office, int gridX, int gridY) throws IOException, InterruptedException {
+        String url = String.format("%s/gridpoints/%s/%d,%d/forecast", BASE_URL, office, gridX, gridY);
+        HttpRequest request = HttpRequest.newBuilder()
+            .uri(URI.create(url))
+            .header("User-Agent", "myweatherapp.com, contact@myweatherapp.com")
+            .build();
+
+        HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+        if (response.statusCode() == 200) {
+            JsonObject jsonObject = Json.createReader(new StringReader(response.body())).readObject();
+            return ForecastData.fromJson(jsonObject.getJsonObject("properties").getJsonArray("periods").getJsonObject(0));
+        }
+        return null;  // Or handle error appropriately
+     }
 
     // Extract the forecast URL from the points API response
     private String extractForecastUrl(String jsonResponse) {
