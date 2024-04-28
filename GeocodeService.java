@@ -9,28 +9,27 @@ import javax.json.JsonObject;
 import javax.json.JsonReader;
 import java.io.StringReader;
 
-public class GeocodeService extends CoordinateCache {
+public class GeocodeService extends APIConfig {
     private static final HttpClient client = HttpClient.newHttpClient();
-    private static final String API_KEY = "6605a52f94949045597836mxe984877";  // Securely manage and store API keys
 
     public static double[] forwardGeocode(String address) {
-        // First, check the cache
-        double[] cachedCoordinates = getCoordinatesFromCache(address);
+        double[] cachedCoordinates = CoordinateCache.getCoordinatesFromCache(address);
         if (cachedCoordinates != null) {
             return cachedCoordinates;
         }
 
         try {
             String encodedAddress = URLEncoder.encode(address, StandardCharsets.UTF_8.toString());
-            String url = String.format("https://geocode.maps.co/search?q=%s&api_key=%s", encodedAddress, API_KEY);
+            String url = String.format("%s/search?q=%s&api_key=%s", GEOCODE_BASE_URL, encodedAddress, GEOCODE_API_KEY);
 
             HttpRequest request = HttpRequest.newBuilder()
                     .uri(URI.create(url))
+                    .header("User-Agent", USER_AGENT) // User-Agent to comply with server requirements
                     .build();
             HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
             if (response.statusCode() == 200) {
                 double[] coordinates = parseCoordinates(response.body());
-                addCoordinatesToCache(address, coordinates[0], coordinates[1]); // Add to cache
+                CoordinateCache.addCoordinatesToCache(address, coordinates[0], coordinates[1]);
                 return coordinates;
             }
         } catch (Exception e) {
@@ -40,12 +39,12 @@ public class GeocodeService extends CoordinateCache {
     }
 
     public static String reverseGeocode(double latitude, double longitude) {
-        // Reverse geocoding cache integration could be here if applicable
         try {
-            String url = String.format("https://geocode.maps.co/reverse?lat=%f&lon=%f&api_key=%s", latitude, longitude, API_KEY);
+            String url = String.format("%s/reverse?lat=%f&lon=%f&api_key=%s", GEOCODE_BASE_URL, latitude, longitude, GEOCODE_API_KEY);
 
             HttpRequest request = HttpRequest.newBuilder()
                     .uri(URI.create(url))
+                    .header("User-Agent", USER_AGENT)
                     .build();
             HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
             if (response.statusCode() == 200) {
