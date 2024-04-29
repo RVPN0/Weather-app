@@ -44,4 +44,37 @@ public class WeatherApp {
     }
 
     private static void selectAndDisplayForecastFromFavorites() {
-        LinkedList <
+            LinkedList <CoordinateCache.CoordinateEntry> favorites = CoordinateCache.getAllFavorites();
+    if (favorites.isEmpty()) {
+        System.out.println("No favorite addresses stored.");
+    } else {
+        System.out.println("Select an address from your favorites:");
+        for (int i = 0; i < favorites.size(); i++) {
+            CoordinateCache.CoordinateEntry entry = favorites.get(i);
+            System.out.printf("%d. %s\n", i + 1, entry.address);
+        }
+    
+        int choice = scanner.nextInt() - 1;
+        scanner.nextLine(); // consume the newline left by nextInt()
+    
+        if (choice >= 0 && choice < favorites.size()) {
+            String selectedAddress = favorites.get(choice).address;
+            displayForecast(selectedAddress);
+        } else {
+            System.out.println("Invalid selection.");
+        }
+    }
+
+private static void displayForecast(String address) {
+    try {
+        String forecast = WeatherServiceNWS.fetchForecastByAddress(address);
+        if (forecast != null && !forecast.isEmpty()) {
+            System.out.println("Weather forecast for " + address + ":\n" + forecast);
+        } else {
+            System.out.println("Failed to retrieve the weather forecast.");
+        }
+    } catch (Exception e) {
+        System.out.println("Error retrieving weather data: " + e.getMessage());
+    }
+}
+
