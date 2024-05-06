@@ -1,6 +1,8 @@
+
 import javax.json.JsonObject;
 
 public class ForecastData {
+
     private String name;
     private String startTime;
     private String endTime;
