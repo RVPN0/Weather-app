@@ -1,23 +1,25 @@
+
+import java.io.IOException;
+import java.io.StringReader;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
-import java.io.IOException;
+
 import javax.json.Json;
 import javax.json.JsonObject;
-import javax.json.JsonReader;
-import java.io.StringReader;
 
 public class WeatherServiceNWS extends APIConfig {
+
     private final HttpClient httpClient = HttpClient.newHttpClient();
 
     // Fetch the forecast for a given grid point
     public String fetchGridForecast(String office, int gridX, int gridY) throws IOException, InterruptedException {
         String url = String.format("%s/gridpoints/%s/%d,%d/forecast", NWS_BASE_URL, office, gridX, gridY);
         HttpRequest request = HttpRequest.newBuilder()
-            .uri(URI.create(url))
-            .header("User-Agent", USER_AGENT)
-            .build();
+                .uri(URI.create(url))
+                .header("User-Agent", USER_AGENT)
+                .build();
 
         HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
         return response.body();
@@ -27,31 +29,31 @@ public class WeatherServiceNWS extends APIConfig {
     public String fetchActiveAlerts(String area) throws IOException, InterruptedException {
         String url = String.format("%s/alerts/active?area=%s", NWS_BASE_URL, area);
         HttpRequest request = HttpRequest.newBuilder()
-            .uri(URI.create(url))
-            .header("User-Agent", USER_AGENT)
-            .build();
+                .uri(URI.create(url))
+                .header("User-Agent", USER_AGENT)
+                .build();
 
         HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
         return response.body();
     }
 
     // Fetch the forecast using an address
-    public String fetchForecastByAddress(String address) throws IOException, InterruptedException {
+    public static String fetchForecastByAddress(String address) throws IOException, InterruptedException {
         double[] coordinates = CoordinateCache.getCoordinatesFromCache(address);
         if (coordinates != null) {
             String pointsUrl = String.format("%s/points/%f,%f", NWS_BASE_URL, coordinates[0], coordinates[1]);
             HttpRequest pointsRequest = HttpRequest.newBuilder()
-                .uri(URI.create(pointsUrl))
-                .header("User-Agent", USER_AGENT)
-                .build();
+                    .uri(URI.create(pointsUrl))
+                    .header("User-Agent", USER_AGENT)
+                    .build();
 
             HttpResponse<String> pointsResponse = httpClient.send(pointsRequest, HttpResponse.BodyHandlers.ofString());
             if (pointsResponse.statusCode() == 200) {
                 String gridForecastUrl = extractForecastUrl(pointsResponse.body());
                 HttpRequest forecastRequest = HttpRequest.newBuilder()
-                    .uri(URI.create(gridForecastUrl))
-                    .header("User-Agent", USER_AGENT)
-                    .build();
+                        .uri(URI.create(gridForecastUrl))
+                        .header("User-Agent", USER_AGENT)
+                        .build();
 
                 HttpResponse<String> forecastResponse = httpClient.send(forecastRequest, HttpResponse.BodyHandlers.ofString());
                 return forecastResponse.body();
@@ -78,9 +80,9 @@ public class WeatherServiceNWS extends APIConfig {
     public ForecastData getForecastData(String office, int gridX, int gridY) throws IOException, InterruptedException {
         String url = String.format("%s/gridpoints/%s/%d,%d/forecast", NWS_BASE_URL, office, gridX, gridY);
         HttpRequest request = HttpRequest.newBuilder()
-            .uri(URI.create(url))
-            .header("User-Agent", USER_AGENT)
-            .build();
+                .uri(URI.create(url))
+                .header("User-Agent", USER_AGENT)
+                .build();
 
         HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
         if (response.statusCode() == 200) {
