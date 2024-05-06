@@ -1,15 +1,15 @@
+
+import java.io.IOException;
+import java.io.StringReader;
 import java.net.URI;
 import java.net.URLEncoder;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
-import javax.json.Json;
-import javax.json.JsonObject;
-import javax.json.JsonReader;
-import java.io.StringReader;
 
 public class GeocodeService extends APIConfig {
+
     private static final HttpClient client = HttpClient.newHttpClient();
 
     public static double[] forwardGeocode(String address) {
@@ -49,7 +49,7 @@ public class GeocodeService extends APIConfig {
             if (response.statusCode() == 200) {
                 return parseAddress(response.body());
             }
-        } catch (Exception e) {
+        } catch (IOException | InterruptedException e) {
             System.out.println("Error during reverse geocoding: " + e.getMessage());
         }
         return "Unknown Location";  // Default return value in case of failure
