@@ -1,8 +1,10 @@
+
 import java.util.LinkedList;
 
-
 public class CoordinateCache {                        // Class that stores coordinate data with the associated address
-    private static class CoordinateEntry {
+
+    public static class CoordinateEntry {
+
         String address;
         double[] coordinates;                        // Store coordinates as an array [latitude, longitude]
 
@@ -12,7 +14,7 @@ public class CoordinateCache {                        // Class that stores coord
         }
     }
     // Linked List to store coordinate entries, specifying the generic type
-    private static final LinkedList <CoordinateEntry> coordinateCache = new LinkedList<>();
+    private static final LinkedList<CoordinateEntry> coordinateCache = new LinkedList<>();
     private static final int MAX_CACHE_SIZE = 10;  // Maximum number of entries in the cache to limit memory issues.
 
     // Method to add coordinates to the cache
@@ -44,8 +46,7 @@ public class CoordinateCache {                        // Class that stores coord
     }
 
     // Get all entries in the cache for display as favorites
-    public static LinkedList <CoordinateEntry> getAllFavorites() {
+    public static LinkedList<CoordinateEntry> getAllFavorites() {
         return new LinkedList<>(coordinateCache); // Return a copy of the current cache
     }
 }
-
