@@ -1,12 +1,18 @@
+package com.dklm.worldwideweather;
 
 import java.util.LinkedList;
 import java.util.Scanner;
 
-public class WeatherApp {
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+@SpringBootApplication
+public class WorldwideweatherApplication {
 
     private static final Scanner scnr = new Scanner(System.in);
 
     public static void main(String[] args) {
+        SpringApplication.run(WorldwideweatherApplication.class, args);
         while (true) {
             System.out.println("Enter an option:");
             System.out.println("1. Enter an address to get the weather");
