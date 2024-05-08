@@ -1,3 +1,4 @@
+package com.dklm.worldwideweather;
 
 import java.io.IOException;
 import java.io.StringReader;
@@ -11,7 +12,7 @@ import javax.json.JsonObject;
 
 public class WeatherServiceNWS extends APIConfig {
 
-    private final HttpClient httpClient = HttpClient.newHttpClient();
+    private final static HttpClient httpClient = HttpClient.newHttpClient();
 
     // Fetch the forecast for a given grid point
     public String fetchGridForecast(String office, int gridX, int gridY) throws IOException, InterruptedException {
@@ -65,7 +66,7 @@ public class WeatherServiceNWS extends APIConfig {
     }
 
     // Extract the forecast URL from the points API response
-    private String extractForecastUrl(String jsonResponse) {
+    private static String extractForecastUrl(String jsonResponse) {
         try {
             JsonObject jsonObject = Json.createReader(new StringReader(jsonResponse)).readObject();
             String forecastUrl = jsonObject.getJsonObject("properties").getString("forecast");
