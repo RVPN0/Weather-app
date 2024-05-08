@@ -44,14 +44,15 @@ public class WorldwideweatherApplication {
         String address = scnr.nextLine();
 
         double[] coordinates = GeocodeService.forwardGeocode(address);
-        if (coordinates != null && coordinates.length == 2 && coordinates[0] != 0.0 && coordinates[1] != 0.0) {
+        if (coordinates != null && coordinates.length < 2 && coordinates[0] != 0.0 && coordinates[1] != 0.0) {
             displayForecast(address);
         } else {
             System.out.println("Failed to retrieve coordinates for the provided address.");
         }
     }
+    // *Finish the favorites method later*
 
-    public static void selectAndDisplayForecastFromFavorites() {
+    public static void selectAndDisplayForecastFromFavorites() { // Method to select and display a forecast from the favorites
         LinkedList<CoordinateCache.CoordinateEntry> favorites = CoordinateCache.getAllFavorites();
         if (favorites.isEmpty()) {
             System.out.println("No favorite addresses stored.");
