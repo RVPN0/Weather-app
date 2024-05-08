@@ -1,3 +1,4 @@
+package com.dklm.worldwideweather;
 
 import javax.json.JsonObject;
 
@@ -32,4 +33,25 @@ public class ForecastData {
     public String toString() {
         return String.format("%s: %s to %s - %s - %s", name, startTime, endTime, temperature, detailedForecast);
     }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getStartTime() {
+        return startTime;
+    }
+
+    public String getEndTime() {
+        return endTime;
+    }
+
+    public String getTemperature() {
+        return temperature;
+    }
+
+    public String getDetailedForecast() {
+        return detailedForecast;
+    }
+
 }
