@@ -1,5 +1,38 @@
 package com.dklm.worldwideweather;
 
+import static com.dklm.worldwideweather.APIConfig.GEOCODE_API_KEY;
+import static com.dklm.worldwideweather.APIConfig.callGeocodeAPI;
+import static com.dklm.worldwideweather.APIConfig.callNWSAPI;
+import static com.dklm.worldwideweather.APIConfig.useApiKey;
+
+public class GeocodeService extends APIConfig {
+
+    public static double[] forwardGeocode(String address) {
+        useApiKey();  // Log API key usage
+        String jsonResponse = callGeocodeAPI(address, GEOCODE_API_KEY);
+        if (jsonResponse != null) {
+            return parseCoordinates(jsonResponse);
+        } else {
+            System.out.println("error");
+            return new double[]{0.0, 0.0}; // Default return value in case of failure
+        }
+    }
+
+    public static String reverseGeocode(double latitude, double longitude) {
+        String jsonResponse = callNWSAPI(latitude, longitude);
+        if (jsonResponse != null) {
+            return parseAddress(jsonResponse);
+        } else {
+            return "Unknown Location"; // Default return value in case of failure
+        }
+    }
+
+    
+
+
+    /*
+package com.dklm.worldwideweather;
+
 import java.io.IOException;
 import java.io.StringReader;
 import java.net.URI;
@@ -62,12 +95,15 @@ public class GeocodeService extends APIConfig {
     }
 
     private static double[] parseCoordinates(String jsonResponse) {
-        try (JsonReader reader = Json.createReader(new StringReader(jsonResponse))) {
-            JsonArray results = reader.readArray();
-            if (results.size() > 0) {
-                JsonObject jsonObject = results.getJsonObject(0);
-                double latitude = jsonObject.getJsonNumber("lat").doubleValue();
-                double longitude = jsonObject.getJsonNumber("lon").doubleValue();
+        try {
+            JsonObject jsonObject = Json.createReader(new StringReader(jsonResponse)).readObject();
+            JsonArray results = jsonObject.getJsonArray("results");
+            if (results != null && !results.isEmpty()) {
+                JsonObject firstResult = results.getJsonObject(0);
+                JsonObject geometry = firstResult.getJsonObject("geometry");
+                JsonObject location = geometry.getJsonObject("location");
+                double latitude = location.getJsonNumber("lat").doubleValue();
+                double longitude = location.getJsonNumber("lon").doubleValue();
                 return new double[]{latitude, longitude};
             }
         } catch (Exception e) {
@@ -78,11 +114,15 @@ public class GeocodeService extends APIConfig {
 
     private static String parseAddress(String jsonResponse) {
         try (JsonReader reader = Json.createReader(new StringReader(jsonResponse))) {
-            JsonObject jsonObject = reader.readObject().getJsonObject("address");
-            return jsonObject.getString("formattedAddress");
+            JsonArray jsonArray = reader.readArray();
+            if (jsonArray != null && jsonArray.size() > 0) {
+                JsonObject jsonObject = jsonArray.getJsonObject(0);
+                return jsonObject.getString("formattedAddress");
+            }
         } catch (Exception e) {
             System.out.println("Error parsing reverse geocoding response: " + e.getMessage());
         }
         return "Unknown Location";
     }
 }
+     */
