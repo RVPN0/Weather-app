@@ -1,6 +1,7 @@
+package com.dklm.worldwideweather;
+
 
 import java.util.LinkedList;
-
 public class CoordinateCache {                        // Class that stores coordinate data with the associated address
 
     public static class CoordinateEntry {
