@@ -1,3 +1,4 @@
+package com.dklm.worldwideweather;
 
 import java.io.IOException;
 import java.io.StringReader;
@@ -7,6 +8,11 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
+
+import javax.json.Json;
+import javax.json.JsonArray;
+import javax.json.JsonObject;
+import javax.json.JsonReader;
 
 public class GeocodeService extends APIConfig {
 
@@ -32,7 +38,7 @@ public class GeocodeService extends APIConfig {
                 CoordinateCache.addCoordinatesToCache(address, coordinates[0], coordinates[1]);
                 return coordinates;
             }
-        } catch (Exception e) {
+        } catch (IOException | InterruptedException e) {
             System.out.println("Error during forward geocoding: " + e.getMessage());
         }
         return new double[]{0.0, 0.0};  // Default return value in case of failure
@@ -52,15 +58,18 @@ public class GeocodeService extends APIConfig {
         } catch (IOException | InterruptedException e) {
             System.out.println("Error during reverse geocoding: " + e.getMessage());
         }
-        return "Unknown Location";  // Default return value in case of failure
+        return "Unknown Location"; // Default return value in case of failure
     }
 
     private static double[] parseCoordinates(String jsonResponse) {
         try (JsonReader reader = Json.createReader(new StringReader(jsonResponse))) {
-            JsonObject jsonObject = reader.readObject().getJsonObject("result");
-            double latitude = Double.parseDouble(jsonObject.getString("latitude"));
-            double longitude = Double.parseDouble(jsonObject.getString("longitude"));
-            return new double[]{latitude, longitude};
+            JsonArray results = reader.readArray();
+            if (results.size() > 0) {
+                JsonObject jsonObject = results.getJsonObject(0);
+                double latitude = jsonObject.getJsonNumber("lat").doubleValue();
+                double longitude = jsonObject.getJsonNumber("lon").doubleValue();
+                return new double[]{latitude, longitude};
+            }
         } catch (Exception e) {
             System.out.println("Error parsing geocoding response: " + e.getMessage());
         }
