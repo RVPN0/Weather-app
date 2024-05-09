@@ -6,48 +6,41 @@ import javax.json.Json;
 import javax.json.JsonObject;
 import javax.json.JsonReader;
 
-public class CoordinateData extends APIConfig {
+public class CoordinateData {
 
-    private double latitude;
-    private double longitude;
-    private long placeId;
+    private String latitude;
+    private String longitude;
+    private String placeId;
     private String displayName;
-    private String objectClass;
-    private String type;
-    private String jsonResponse;
+    private String geoJsonResponse;
 
-    public CoordinateData(String jsonResponse) {
-        this.jsonResponse = jsonResponse;
-        parseJsonResponse();
+    public CoordinateData() {
     }
 
-    private void parseJsonResponse() {
-        try (JsonReader reader = Json.createReader(new StringReader(jsonResponse))) {
-            JsonObject jsonObject = reader.readArray().getJsonObject(0);
+    // Parses the JSON response
+    private void parseJsonResponse(String geoJsonResponse) throws IllegalArgumentException {
+        try (JsonReader reader = Json.createReader(new StringReader(geoJsonResponse))) {
+            JsonObject geoData = reader.readArray().getJsonObject(0);
 
-            this.placeId = jsonObject.getJsonNumber("place_id").longValue();
-            this.latitude = jsonObject.getJsonNumber("lat").doubleValue();
-            this.longitude = jsonObject.getJsonNumber("lon").doubleValue();
-            this.displayName = jsonObject.getString("display_name");
-            this.objectClass = jsonObject.getString("class");
-            this.type = jsonObject.getString("type");
+            this.placeId = Integer.toString(geoData.getInt("place_id"));
+            this.latitude = geoData.getString("lat");
+            this.longitude = geoData.getString("lon");
+            this.displayName = geoData.getString("display_name");
         } catch (Exception e) {
-            System.err.println("Error parsing JSON response: " + e.getMessage());
-            this.latitude = 0.0;
-            this.longitude = 0.0;
+            throw new IllegalArgumentException("Error parsing Geocode API JSON response: " + e.getMessage());
         }
     }
 
     // Setter methods
-    public void setLatitude(double latitude) {
+    public void setLatitude(String latitude) {
         this.latitude = latitude;
     }
 
-    public void setLongitude(double longitude) {
+    public void setLongitude(String longitude) {
         this.longitude = longitude;
     }
 
-    public void setPlaceId(long placeId) {
+    public void setPlaceId(String placeId) {
         this.placeId = placeId;
     }
 
@@ -55,28 +48,38 @@ public class CoordinateData extends APIConfig {
         this.displayName = displayName;
     }
 
-    public void setObjectClass(String objectClass) {
-        this.objectClass = objectClass;
+    public static String formatCoordinate(double coordinate) {
+        return String.format("%.4f", coordinate);
     }
 
-    public void setType(String type) {
-        this.type = type;
-    }
+    public void setJsonResponse(String geoJsonResponse) {
+        this.geoJsonResponse = geoJsonResponse;
+        System.out.println("Before: ");
+        System.out.println(geoJsonResponse);
+        parseJsonResponse(geoJsonResponse); // Automatically parse new JSON response
+        System.out.println();
+        System.out.println(" ---------------- ");
+        System.out.println();
 
-    public void setJsonResponse(String jsonResponse) {
-        this.jsonResponse = jsonResponse;
+        System.out.println("After: ");
+        System.out.println("Display Name: " + displayName);
+        System.out.println("Place ID: " + placeId);
+        coordinates();
+        System.out.println(" ---------------- ");
+        System.out.println("Latitude: " + latitude);
+        System.out.println("Longitude: " + longitude);
     }
 
     // Getter methods
-    public double getLatitude() {
+    public String getLatitude() {
         return latitude;
     }
 
-    public double getLongitude() {
+    public String getLongitude() {
         return longitude;
     }
 
-    public long getPlaceId() {
+    public String getPlaceId() {
         return placeId;
     }
 
@@ -84,15 +87,11 @@ public class CoordinateData extends APIConfig {
         return displayName;
     }
 
-    public String getObjectClass() {
-        return objectClass;
-    }
-
-    public String getType() {
-        return type;
+    public void coordinates() {
+        System.out.println("Coordinates: " + latitude + ", " + longitude);
     }
 
     public String getJsonResponse() {
-        return jsonResponse;
+        return geoJsonResponse;
     }
 }
