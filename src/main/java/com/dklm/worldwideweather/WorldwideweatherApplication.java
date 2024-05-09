@@ -1,5 +1,6 @@
 package com.dklm.worldwideweather;
 
+import java.io.IOException;
 import java.util.LinkedList;
 import java.util.Scanner;
 
@@ -20,7 +21,7 @@ public class WorldwideweatherApplication {
             System.out.println("3. Exit");
 
             int option = scnr.nextInt();
-            scnr.nextLine(); // consume the newline left by nextInt()
+            scnr.nextLine();  // consume the newline left by nextInt()
 
             switch (option) {
                 case 1:
@@ -31,7 +32,7 @@ public class WorldwideweatherApplication {
                     break;
                 case 3:
                     scnr.close();
-                    return;
+                    System.exit(0);  // Properly exit the application
                 default:
                     System.out.println("Invalid option. Please choose 1, 2, or 3.");
                     break;
@@ -42,49 +43,66 @@ public class WorldwideweatherApplication {
     private static void handleNewAddress() {
         System.out.println("Enter an address:");
         String address = scnr.nextLine();
-
-        double[] coordinates = GeocodeService.forwardGeocode(address);
-        if (coordinates != null && coordinates.length < 2 && coordinates[0] != 0.0 && coordinates[1] != 0.0) {
-            displayForecast(address);
-        } else {
+        String[] coordinates = GeocodeService.forwardGeocode(address);
+        if (coordinates == null || coordinates.length < 2) {
             System.out.println("Failed to retrieve coordinates for the provided address.");
+            return;
         }
-    }
-    // *Finish the favorites method later*
 
-    public static void selectAndDisplayForecastFromFavorites() { // Method to select and display a forecast from the favorites
-        LinkedList<CoordinateCache.CoordinateEntry> favorites = CoordinateCache.getAllFavorites();
-        if (favorites.isEmpty()) {
-            System.out.println("No favorite addresses stored.");
-        } else {
-            System.out.println("Select an address from your favorites:");
-            for (int i = 0; i < favorites.size(); i++) {
-                CoordinateCache.CoordinateEntry entry = favorites.get(i);
-                System.out.printf("%d. %s\n", i + 1, entry.address);
-            }
-
-            int choice = scnr.nextInt() - 1;
-            scnr.nextLine(); // consume the newline left by nextInt()
-
-            if (choice >= 0 && choice < favorites.size()) {
-                String selectedAddress = favorites.get(choice).address;
-                displayForecast(selectedAddress);
-            } else {
-                System.out.println("Invalid selection.");
-            }
-        }
-    }
-
-    private static void displayForecast(String address) {
+        double latitude = formatCoordinate(Double.parseDouble(coordinates[0]));
+        double longitude = formatCoordinate(Double.parseDouble(coordinates[1]));
         try {
-            String forecast = WeatherServiceNWS.fetchForecastByAddress(address);
-            if (forecast != null && !forecast.isEmpty()) {
-                System.out.println("Weather forecast for " + address + ":\n" + forecast);
+            String[] detailedForecast = WeatherServiceNWS.forwardNWS(latitude, longitude);
+            if (detailedForecast != null && detailedForecast.length > 1) {
+                System.out.println("Weather forecast for " + address + ":\n" + detailedForecast[1]);
+                promptSaveFavorite(address, latitude, longitude);
             } else {
-                System.out.println("Failed to retrieve the weather forecast.");
+                System.out.println("Failed to retrieve detailed forecast.");
             }
-        } catch (Exception e) {
+        } catch (IOException | InterruptedException e) {
             System.out.println("Error retrieving weather data: " + e.getMessage());
         }
     }
+
+    private static void promptSaveFavorite(String address, double latitude, double longitude) {
+        System.out.println("Do you want to save this address to your favorites? (yes/no)");
+        String response = scnr.nextLine().trim().toLowerCase();
+        if ("yes".equals(response)) {
+            CoordinateCache.addCoordinatesToCache(address, latitude, longitude);
+            System.out.println("Address saved to favorites.");
+        }
+    }
+
+    private static void selectAndDisplayForecastFromFavorites() {
+        LinkedList<CoordinateCache.CoordinateEntry> favorites = CoordinateCache.getAllFavorites();
+        if (favorites.isEmpty()) {
+            System.out.println("No favorite addresses stored.");
+            return;
+        }
+
+        System.out.println("Select an address from your favorites:");
+        for (int i = 0; i < favorites.size(); i++) {
+            System.out.printf("%d. %s (%f, %f)\n", i + 1, favorites.get(i).address, favorites.get(i).coordinates[0], favorites.get(i).coordinates[1]);
+        }
+
+        int choice = scnr.nextInt() - 1;
+        scnr.nextLine();  // consume the newline left by nextInt()
+
+        if (choice >= 0 && choice < favorites.size()) {
+            CoordinateCache.CoordinateEntry selectedEntry = favorites.get(choice);
+            try {
+                String[] forecast = WeatherServiceNWS.forwardNWS(selectedEntry.coordinates[0], selectedEntry.coordinates[1]);
+                System.out.println("Weather forecast for " + selectedEntry.address + ":\n" + forecast[1]);
+            } catch (IOException | InterruptedException e) {
+                System.out.println("Error retrieving weather data: " + e.getMessage());
+            }
+        } else {
+            System.out.println("Invalid selection.");
+        }
+    }
+
+    private static double formatCoordinate(double coordinate) {
+        return Math.round(coordinate * 10000.0) / 10000.0;
+    }
+
 }
