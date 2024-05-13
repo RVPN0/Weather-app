@@ -2,19 +2,19 @@ package com.dklm.worldwideweather;
 
 public class GeocodeService extends APIConfig {
 
-    public static String[] forwardGeocode(String address) {
-        useGeoApiKey();  // Log API key usage
-
+    public static CoordinateData forwardGeocode(String address) {
         String jsonResponse = callGeocodeAPI(address, GEOCODE_API_KEY);
-        System.out.println("JSON Response: " + jsonResponse);
         CoordinateData coordinateData = new CoordinateData();
         if (jsonResponse != null) {
-            coordinateData.setJsonResponse(jsonResponse);
-            return new String[]{coordinateData.getLatitude(), coordinateData.getLongitude()};
+            boolean parseSuccess = coordinateData.parseJsonResponse(jsonResponse);
+            if (parseSuccess) {
+                return coordinateData; // Return the CoordinateData object directly
+            } else {
+                return new CoordinateData("0.0", "0.0"); // Return default coordinates in case of parsing failure
+            }
         } else {
-            System.out.println("error");
-            return new String[]{"0.0", "0.0"}; // Default return value in case of failure
+            System.out.println("Error: Failed to retrieve geocode data.");
+            return new CoordinateData("0.0", "0.0"); // Return default coordinates in case of API failure
         }
     }
-
 }
