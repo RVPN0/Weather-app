@@ -7,7 +7,7 @@ public class GeocodeService extends APIConfig {
         String jsonResponse = callGeocodeAPI(address, GEOCODE_API_KEY);
         CoordinateData coordinateData = new CoordinateData();
         if (jsonResponse != null) {
-            boolean parseSuccess = coordinateData.parseJsonResponse(jsonResponse);
+            boolean parseSuccess = coordinateData.parseGeocodeResponse(jsonResponse);
             if (parseSuccess) {
                 return coordinateData; // Return the CoordinateData object directly
             } else {
